@@ -1,0 +1,31 @@
+name: Deploy ARM Template
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'ARMTemplate/**'
+env:
+  AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}   # set this to your Azure Subscription Id
+  AZURE_RESOURCE_GROUP: ${{ secrets.AZURE_RESOURCE_GROUP }}   # set this to your target resource group
+
+jobs:
+  deploy-virtual-network-template:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@main
+
+      - name: Login to Azure
+        uses: azure/actions/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Deploy ARM Template
+        uses: azure/arm-deploy@v1
+        with:
+          scope: resourcegroup
+          subscriptionId: ${{ env.AZURE_SUBSCRIPTION_ID }}
+          resourceGroupName: ${{ env.AZURE_RESOURCE_GROUP }}
+          template: ARMTemplate/azuredeploy.json
