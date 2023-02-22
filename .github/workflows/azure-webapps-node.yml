@@ -1,3 +1,4 @@
+name: CICD
 on:
   push:
     branches: [ "master" ]
@@ -28,11 +29,17 @@ jobs:
         npm install
         npm run test --if-present
 
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v1
+
     - name: Upload artifact for deployment job
       uses: actions/upload-artifact@v3
       with:
         name: node-app
-        path: .
+        path: |
+         .
+         !ARMTemplate
+         !*.yml
 
   deploy:
     permissions:
